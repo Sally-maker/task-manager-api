@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import prisma from '../config/prisma.js'
+import { AppError } from '../utils/errors.js'
 
 const ACCESS_TOKEN_EXPIRY = '15m'
 const REFRESH_TOKEN_EXPIRY_DAYS = 30
@@ -18,7 +19,7 @@ export class AuthService {
   async register(name: string, email: string, password: string) {
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) {
-      throw { status: 409, message: 'Email already in use' }
+      throw new AppError(409, 'Email already in use')
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -33,12 +34,12 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await prisma.user.findUnique({ where: { email } })
     if (!user) {
-      throw { status: 401, message: 'Invalid credentials' }
+      throw new AppError(401, 'Invalid credentials')
     }
 
     const isValid = await bcrypt.compare(password, user.password)
     if (!isValid) {
-      throw { status: 401, message: 'Invalid credentials' }
+      throw new AppError(401, 'Invalid credentials')
     }
 
     const { accessToken, refreshToken } = generateTokenPair(user.id)
@@ -62,7 +63,7 @@ export class AuthService {
 
     if (!stored || stored.expiresAt < new Date()) {
       if (stored) await prisma.refreshToken.delete({ where: { token } })
-      throw { status: 401, message: 'Invalid or expired refresh token' }
+      throw new AppError(401, 'Invalid or expired refresh token')
     }
 
     const { accessToken, refreshToken: newRefreshToken } = generateTokenPair(stored.userId)

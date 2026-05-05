@@ -1,5 +1,6 @@
 import { TaskStatus } from '../generated/prisma/client.js'
 import prisma from '../config/prisma.js'
+import { AppError } from '../utils/errors.js'
 
 interface CreateTaskData {
   title: string
@@ -45,7 +46,7 @@ export class TaskService {
   async findById(userId: string, id: string) {
     const task = await prisma.task.findFirst({ where: { id, userId } })
     if (!task) {
-      throw { status: 404, message: 'Task not found' }
+      throw new AppError(404, 'Task not found')
     }
     return task
   }

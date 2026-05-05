@@ -1,13 +1,13 @@
 import { Response } from 'express'
 import { TaskStatus } from '../generated/prisma/client.js'
-import { AuthRequest } from '../middlewares/auth.middleware'
-import { TaskService } from '../services/task.service'
+import { AuthRequest } from '../middlewares/auth.middleware.js'
+import { TaskService } from '../services/task.service.js'
 import {
   createTaskSchema,
   taskQuerySchema,
   updateTaskSchema,
-} from '../validators/task.validator'
-import { asyncHandler } from '../utils/async-handler'
+} from '../validators/task.validator.js'
+import { asyncHandler } from '../utils/async-handler.js'
 
 const taskService = new TaskService()
 
