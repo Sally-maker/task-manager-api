@@ -98,6 +98,9 @@ dist
 # Sveltekit cache directory
 .svelte-kit/
 
+# Prisma generated client
+src/generated/
+
 # vitepress build output
 **/.vitepress/dist
 
